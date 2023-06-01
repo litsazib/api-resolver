@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setLoading, updateGlobalAlert } from "../../../store/slices/appSlice";
 import { Container, Row, Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { apiLink, site_title } from "../../../utils/env.constant";
@@ -61,10 +63,17 @@ const validateComments = (value) => {
 };
 
 function HomePage() {
+  const dispatch = useDispatch();
+  const { globalAlert,isLoad } = useSelector((state) => state.app);
   return (
     <Container>
       <Row>
         <h1 className="mt-4 mb-5 text-center">Formik Form</h1>
+        <h3>
+          <span>{globalAlert.type}</span>
+          <span>{globalAlert.title}</span>
+          <span>{globalAlert.message}</span>
+        </h3>
         {/* <APIProvider/> */}
         <Col md={6} className="mx-auto">
           <Formik
