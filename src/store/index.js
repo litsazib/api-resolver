@@ -35,17 +35,15 @@ const rootReducer = combineReducers({
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 export const store = configureStore({
-  reducer: persistedReducer
-});
-
-export const persistor = persistStore(configureStore({
   reducer: persistedReducer,
   middleware: [thunk],
-}));
+});
+
+export const persistor = persistStore(store);
 
 export default configureStore({
   reducer:{
     app: appSlice,
     auth: authSlice
-  }
+}
 })

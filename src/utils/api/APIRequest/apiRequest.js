@@ -68,9 +68,16 @@ export async function apiRequest(path, data, submitProps) {
         };
       }
     } else {
-      store.dispatch(setLoading(true))
+      store.dispatch(
+        updateGlobalAlert({
+          type: "REST ROKTIM",
+          title: "System Failure!Rokitm008",
+          message: new Error(error).message,
+        })
+      );
+      //submitProps.resetForm();
       return {
-        type: "Error 001",
+        type: "Error",
         title: "System Failure!",
         message: new Error(error).message,
       };

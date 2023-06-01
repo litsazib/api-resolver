@@ -13,8 +13,6 @@ import {
 } from "formik";
 import * as Yup from "yup";
 import TextError from "./TextError";
-import APIProvider from "../../APIProvider";
-import { Create , save} from "../../APIProvider";
 
 const initialValues = {
   name: "",
@@ -30,38 +28,18 @@ const initialValues = {
   phNumbers: [""],
 };
 
+
 const onSubmit = (values, submitProps) => {
+  // submitProps.setSubmitting(false);
   (async () => {
     let result = await apiRequest(apiLink.hitRegistration, values,submitProps);
-    const {type,title,message} = result
-    console.log(result)
+    const {type,title,message,fn} = result
+    console.log('type:',type ,'title:',title,'msg:',message)
     // if (type) {
        // DO something or redurect ex:navigate("/login")
         // submitProps.resetForm();
-          // submitProps.setSubmitting(false);
     // }
-
- 
-
-    // Create()
-    //   .then((res)=>{
-    //     console.log(res)
-    //   })
-    //   .catch((err)=>{
-    //     console.log(err)
-    //   })
-
-    // save()
-    //   .then((res)=>{
-    //     console.log(res)
-    //   })
-    //   .catch((err)=>{
-    //     console.log(err)
-    //   })
-
   })();
-
-
 
 };
 
@@ -85,7 +63,6 @@ function HomePage() {
     <Container>
       <Row>
         <h1 className="mt-4 mb-5 text-center">Formik Form</h1>
-       {/* <APIProvider/> */}
         <Col md={6} className="mx-auto">
           <Formik
             initialValues={initialValues}
