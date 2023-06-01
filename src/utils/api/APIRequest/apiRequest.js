@@ -14,6 +14,7 @@ export async function apiRequest(path, data, submitProps) {
   try {
     store.dispatch(setLoading(true));
     let res = await ApiService.post(path, data);
+    console.log(res)
     if (res.resultCode === 200) {
       store.dispatch(
         updateGlobalAlert({
@@ -71,7 +72,7 @@ export async function apiRequest(path, data, submitProps) {
     } else {
       store.dispatch(
         updateGlobalAlert({
-          type: "NEW ERROR",
+          type: Math.random(),
           title: "System Failure!",
           message: new Error(error).message,
         })

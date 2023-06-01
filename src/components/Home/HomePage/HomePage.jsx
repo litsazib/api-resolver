@@ -70,7 +70,7 @@ function HomePage() {
       <Row>
         <h1 className="mt-4 mb-5 text-center">Formik Form</h1>
         <small>
-          <span>{globalAlert.type}</span> <br/>
+          <span className="text-danger">{globalAlert.type}</span> <br/>
           <span>{globalAlert.title}</span><br/>
           <span>{globalAlert.message}</span>
         </small>

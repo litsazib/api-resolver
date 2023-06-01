@@ -40,7 +40,7 @@ ApiService.interceptors.response.use(
     return response?.data || {};
   },
   (error) => {
-    //console.log("Response Error:", error);
+    console.log("Response Error:", error);
     return Promise.reject(error);
   }
 );
