@@ -68,16 +68,9 @@ export async function apiRequest(path, data, submitProps) {
         };
       }
     } else {
-      store.dispatch(
-        updateGlobalAlert({
-          type: "Error-008",
-          title: "System Failure!Rokitm008",
-          message: new Error(error).message,
-        })
-      );
-      //submitProps.resetForm();
+      store.dispatch(setLoading(true))
       return {
-        type: "Error",
+        type: "Error 001",
         title: "System Failure!",
         message: new Error(error).message,
       };
