@@ -13,6 +13,7 @@ import {
 } from "formik";
 import * as Yup from "yup";
 import TextError from "./TextError";
+import APIProvider from "../../APIProvider";
 
 const initialValues = {
   name: "",
@@ -63,6 +64,7 @@ function HomePage() {
     <Container>
       <Row>
         <h1 className="mt-4 mb-5 text-center">Formik Form</h1>
+        {/* <APIProvider/> */}
         <Col md={6} className="mx-auto">
           <Formik
             initialValues={initialValues}
