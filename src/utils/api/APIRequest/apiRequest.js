@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import ApiService from "../index";
-import store from "../../../store";
+// import store from "../../../store";
+import { store } from "../../../store";
 import { setLoading, updateGlobalAlert } from "../../../store/slices/appSlice";
 // import {ErrorToast, SuccessToast} from "../helper/FormHelper";
 // import store from "../redux/store/store";
@@ -70,12 +71,12 @@ export async function apiRequest(path, data, submitProps) {
     } else {
       store.dispatch(
         updateGlobalAlert({
-          type: "REST ROKTIM-007",
-          title: "System Failure!Rokitm007",
+          type: "NEW ERROR",
+          title: "System Failure!",
           message: new Error(error).message,
         })
       );
-      //submitProps.resetForm();
+      submitProps.resetForm();
       return {
         type: "Error",
         title: "System Failure!",

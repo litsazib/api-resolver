@@ -69,11 +69,11 @@ function HomePage() {
     <Container>
       <Row>
         <h1 className="mt-4 mb-5 text-center">Formik Form</h1>
-        <h3>
-          <span>{globalAlert.type}</span>
-          <span>{globalAlert.title}</span>
+        <small>
+          <span>{globalAlert.type}</span> <br/>
+          <span>{globalAlert.title}</span><br/>
           <span>{globalAlert.message}</span>
-        </h3>
+        </small>
         {/* <APIProvider/> */}
         <Col md={6} className="mx-auto">
           <Formik
