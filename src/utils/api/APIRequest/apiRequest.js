@@ -70,8 +70,8 @@ export async function apiRequest(path, data, submitProps) {
     } else {
       store.dispatch(
         updateGlobalAlert({
-          type: "REST ROKTIM",
-          title: "System Failure!Rokitm008",
+          type: "REST ROKTIM-007",
+          title: "System Failure!Rokitm007",
           message: new Error(error).message,
         })
       );
