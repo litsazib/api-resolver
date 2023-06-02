@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading, updateGlobalAlert } from "../../../store/slices/appSlice";
 import { Container, Row, Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { apiLink, site_title } from "../../../utils/env.constant";
-import { apiRequest } from "../../../utils/api/APIRequest/apiRequest";
+import { Create, Read } from "../../../utils/api/APIRequest/Crud";
 import {
   Formik,
   Form,
@@ -15,8 +15,7 @@ import {
 } from "formik";
 import * as Yup from "yup";
 import TextError from "./TextError";
-import APIProvider from "../../APIProvider";
-import { Create , save} from "../../APIProvider";
+import { requestConfig } from '../../../utils/api/CurdParameters'
 
 const initialValues = {
   name: "",
@@ -32,28 +31,11 @@ const initialValues = {
   phNumbers: [""],
 };
 
-
 const onSubmit = async (values) => {
-  let result = await apiRequest(apiLink.hitRegistration, values ,requestConfig);
-  console.log(result)
+  let loader = true;
+  let result = await Create(apiLink.hitRegistration, values ,requestConfig,loader);
+  console.log('submit',result)
 };
-
-
-const requestConfig ={
-  loader:true,
-  dataMethod:[],
-  paginationMethods:{}
-} 
-
-requestConfig.dataMethod = (array) =>{
-  return array
-}
-requestConfig.paginationMethods = (Obj) =>{
-  return Obj
-}
-
-
-
 
 const validationSchema = Yup.object({
   name: Yup.string().required("Required"),
@@ -70,11 +52,42 @@ const validateComments = (value) => {
   return error;
 };
 
+
 function HomePage() {
+  const [list, setList] = useState([]);
+  const [error, setError] = useState({});
+  const List = async ()=>{
+      let listData = await Read(apiLink.hitPostList,requestConfig,loader);
+      return listData;
+  }
+  useEffect(() => {
+    List()
+      .then((res)=>{
+        setList(res)
+      })
+      .catch((err)=>{
+        setError(err)
+      })
+
+  },[]);
+
+
   const dispatch = useDispatch();
   const { globalAlert,isLoad } = useSelector((state) => state.app);
   return (
     <Container>
+      <Row>
+        <Col md={6} className="mx-auto">
+          <h1>LIST</h1>
+          <ul>
+              {list.slice(0,5).map((item,id)=>{
+                return (
+                  <li key={id}>{item.title}</li>
+                )
+              })}
+          </ul>
+        </Col>
+      </Row>
       <Row>
         <h1 className="mt-4 mb-5 text-center">Formik Form</h1>
         <small>
@@ -82,7 +95,6 @@ function HomePage() {
           <span>{globalAlert.title}</span><br/>
           <span>{globalAlert.message}</span>
         </small>
-        {/* <APIProvider/> */}
         <Col md={6} className="mx-auto">
           <Formik
             initialValues={initialValues}
