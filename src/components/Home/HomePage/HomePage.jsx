@@ -33,19 +33,27 @@ const initialValues = {
 };
 
 
-const onSubmit = (values, submitProps) => {
-  // submitProps.setSubmitting(false);
-  (async () => {
-    let result = await apiRequest(apiLink.hitRegistration, values,submitProps);
-    const {type,title,message,fn} = result
-    console.log('type:',type ,'title:',title,'msg:',message)
-    // if (type) {
-       // DO something or redurect ex:navigate("/login")
-        // submitProps.resetForm();
-    // }
-  })();
-
+const onSubmit = async (values) => {
+  let result = await apiRequest(apiLink.hitRegistration, values ,requestConfig);
+  console.log(result)
 };
+
+
+const requestConfig ={
+  loader:true,
+  dataMethod:[],
+  paginationMethods:{}
+} 
+
+requestConfig.dataMethod = (array) =>{
+  return array
+}
+requestConfig.paginationMethods = (Obj) =>{
+  return Obj
+}
+
+
+
 
 const validationSchema = Yup.object({
   name: Yup.string().required("Required"),

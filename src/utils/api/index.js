@@ -1,4 +1,5 @@
 import axios from "axios";
+import env from "react-dotenv";
 // import jwt from "jsonwebtoken";
 // const routeValidation = (url) => {
 //   return jwt.sign({ url }, process.env.SECRET_KEY);
@@ -40,7 +41,7 @@ ApiService.interceptors.response.use(
     return response?.data || {};
   },
   (error) => {
-    console.log("Response Error:", error);
+    // console.log("Response Error:", error);
     return Promise.reject(error);
   }
 );

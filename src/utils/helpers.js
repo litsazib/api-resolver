@@ -104,3 +104,5 @@ export const validateInsuranceModalInfo = ({companyName,claim_mailing_address_1,
   const {phone} = phoneValidation({phone: phone_number});
   return {company,address1,state,city,zipCode,phone};
 };
+
+
