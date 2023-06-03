@@ -4,7 +4,7 @@ import { setLoading, updateGlobalAlert } from "../../../store/slices/appSlice";
 import { Container, Row, Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { apiLink, site_title } from "../../../utils/env.constant";
-import { defaultMethod,Create, Read } from "../../../utils/Helpers/APIRequest/Crud";
+import { defaultMethod, Create, Read, SelectByPageing, SelectByID, Delete, Update } from "../../../utils/Helpers/APIRequest/Crud";
 import {
   Formik,
   Form,
@@ -31,10 +31,40 @@ const initialValues = {
 };
 
 let loader = true;
+
 const onSubmit = async (values) => {
   let result = await Create(apiLink.hitRegistration, values ,defaultMethod,loader);
   console.log('submit',result)
 };
+
+const SelectAll = async ()=>{
+  let result = await Read(apiLink.hitPostList,defaultMethod,loader);
+  return result
+}
+
+
+let initialParam = {
+  // ...params,
+  // page: pagination.current,
+  // per_page: pagination.pageSize,
+};
+
+const List = async (initialParam)=>{
+  let result = await SelectByPageing(apiLink.hitPostList,initialParam,defaultMethod,loader);
+  return result
+}
+
+const SelectOne = async (id)=>{
+  let result = await SelectByID(apiLink.hitPostList,id,loader);
+  console.log('SelectByID',result)
+  return result
+}
+
+const DeleteOne = async (id)=>{
+  let result = await Delete(apiLink.hitPostDelete,id,loader);
+  console.log('DeleteData',result)
+  return result
+}
 
 const validationSchema = Yup.object({
   name: Yup.string().required("Required"),
@@ -53,21 +83,16 @@ const validateComments = (value) => {
 
 
 function HomePage() {
-  const [list, setList] = useState([]);
+  const [data, setData] = useState([]);
   const [error, setError] = useState({});
-  const List = async ()=>{
-      let listData = await Read(apiLink.hitPostList,defaultMethod,loader);
-      return listData
-  }
   useEffect(() => {
-    List()
+    SelectAll()
       .then((res)=>{
-        setList(res)
+        setData(res)
       })
       .catch((err)=>{
         setError(err)
       })
-
   },[]);
 
 
@@ -79,7 +104,7 @@ function HomePage() {
         <Col md={6} className="mx-auto">
           <h1>LIST</h1>
           <ul>
-              {list.slice(0,5).map((item,id)=>{
+              {data.slice(0,5).map((item,id)=>{
                 return (
                   <li key={id}>{item.title}</li>
                 )

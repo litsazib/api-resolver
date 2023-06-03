@@ -1,6 +1,7 @@
 const apiLink = {
   hitRegistration: "posts",
   hitPostList: "posts",
+  hitPostDelete: "posts",
   hitLoginLink: "login",
   hitLogoutLink: "logout",
   hitResetEmailLink: "password/email",
