@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import ApiService from "../../utils/api";
+import ApiService from "../../utils/Helpers/APIRequest/";
 import { apiLink } from "../../utils/env.constant";
 
 export const loginAction = createAsyncThunk("auth/login", async (loginData) => {

@@ -1,6 +1,16 @@
-import ApiService from "../index";
+import ApiService from "./index";
 import { store } from "../../../store";
 import { setLoading, updateGlobalAlert } from "../../../store/slices/appSlice";
+
+
+export const defaultMethod  = {
+  dataMethod:(array) =>{
+    return array
+  },
+  paginationMethods:(Obj) =>{
+    return Obj
+  }
+} 
 
 export async function Create(path, data,requestConfig,loader) {
   const {dataMethod,paginationMethods} = requestConfig

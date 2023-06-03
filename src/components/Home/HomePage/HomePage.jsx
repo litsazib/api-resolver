@@ -4,7 +4,7 @@ import { setLoading, updateGlobalAlert } from "../../../store/slices/appSlice";
 import { Container, Row, Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { apiLink, site_title } from "../../../utils/env.constant";
-import { Create, Read } from "../../../utils/api/APIRequest/Crud";
+import { defaultMethod,Create, Read } from "../../../utils/Helpers/APIRequest/Crud";
 import {
   Formik,
   Form,
@@ -15,7 +15,6 @@ import {
 } from "formik";
 import * as Yup from "yup";
 import TextError from "./TextError";
-import { requestConfig } from '../../../utils/api/CurdParameters'
 
 const initialValues = {
   name: "",
@@ -33,7 +32,7 @@ const initialValues = {
 
 const onSubmit = async (values) => {
   let loader = true;
-  let result = await Create(apiLink.hitRegistration, values ,requestConfig,loader);
+  let result = await Create(apiLink.hitRegistration, values ,defaultMethod,loader);
   console.log('submit',result)
 };
 
@@ -57,7 +56,7 @@ function HomePage() {
   const [list, setList] = useState([]);
   const [error, setError] = useState({});
   const List = async ()=>{
-      let listData = await Read(apiLink.hitPostList,requestConfig,loader);
+      let listData = await Read(apiLink.hitPostList,defaultMethod,loader);
       return listData;
   }
   useEffect(() => {
