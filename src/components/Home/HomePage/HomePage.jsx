@@ -30,8 +30,8 @@ const initialValues = {
   phNumbers: [""],
 };
 
+let loader = true;
 const onSubmit = async (values) => {
-  let loader = true;
   let result = await Create(apiLink.hitRegistration, values ,defaultMethod,loader);
   console.log('submit',result)
 };
@@ -57,7 +57,7 @@ function HomePage() {
   const [error, setError] = useState({});
   const List = async ()=>{
       let listData = await Read(apiLink.hitPostList,defaultMethod,loader);
-      return listData;
+      return listData
   }
   useEffect(() => {
     List()
