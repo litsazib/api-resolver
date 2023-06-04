@@ -17,7 +17,11 @@ export async function Create(path, data,requestConfig,loader) {
   try {
     loader && store.dispatch(setLoading(true));
     let res = await ApiService.post(path, data);
-    return res;
+    if(res.resultCode===200){
+      return res.data;
+    }else {
+      return false
+    }
   } catch (error) {
     let errorObj ={
       loading:loader,

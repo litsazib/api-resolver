@@ -33,7 +33,11 @@ const initialValues = {
 let loader = true;
 
 const onSubmit = async (values) => {
-  let result = await Create(apiLink.hitRegistration, values ,defaultMethod,loader);
+  let postBody = {
+    "email":"office.admin@example.com",
+    "password":"123456"
+  }
+  let result = await Create(apiLink.hitLoginLink, postBody ,defaultMethod,loader);
   console.log('submit',result)
 };
 
@@ -86,13 +90,13 @@ function HomePage() {
   const [data, setData] = useState([]);
   const [error, setError] = useState({});
   useEffect(() => {
-    SelectAll()
-      .then((res)=>{
-        setData(res)
-      })
-      .catch((err)=>{
-        setError(err)
-      })
+    // SelectAll()
+    //   .then((res)=>{
+    //     setData(res)
+    //   })
+    //   .catch((err)=>{
+    //     setError(err)
+    //   })
   },[]);
 
 
@@ -104,11 +108,11 @@ function HomePage() {
         <Col md={6} className="mx-auto">
           <h1>LIST</h1>
           <ul>
-              {data.slice(0,5).map((item,id)=>{
+              {/* {data.slice(0,5).map((item,id)=>{
                 return (
                   <li key={id}>{item.title}</li>
                 )
-              })}
+              })} */}
           </ul>
         </Col>
       </Row>
