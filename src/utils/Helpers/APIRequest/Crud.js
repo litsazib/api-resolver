@@ -113,6 +113,68 @@ export async function SelectByPageing (path,params ,loader=true) {
   }
 }
 
+export async function Delete(path,params,loader=true){
+  const {id} = params
+  try {
+    loader && store.dispatch(setLoading(true));
+    let res = await ApiService.delete(path, {params: {id}});
+    if (res.resultCode === 200) {
+      store.dispatch(
+        updateGlobalAlert({
+          type: "Success",
+          title: res.success.title,
+          message: res.success.message,
+        })
+      );
+      return true;
+    }else{
+      if(res.response.data.resultCode === 401){
+        store.dispatch(updateGlobalAlert({
+          type: 'Error',
+          title: res.response.data.error.title,
+          message: res.response.data.error.message
+        }))
+        store.dispatch(logoutAction())
+      }else if(res.response.data.resultCode === 500){
+        store.dispatch(updateGlobalAlert({
+          type: 'Error',
+          title: res.response.data.error.title,
+          message: res.response.data.error.message
+        }))
+      }
+      return false
+    }
+  } catch (error) {
+    store.dispatch(updateGlobalAlert({
+      type: 'Error',
+      title: 'System Error',
+      message: new Error(error).message
+    }))
+    return false;
+  }
+}
+
+export async function Update(path,updateValue,params,loader=true) {
+  const {id} = params
+  try {
+    loader && store.dispatch(setLoading(true));
+    let res = await ApiService.post(path, updateValue, {params:{id}});
+    if(res.status===200){
+      return true;
+    }else{
+      return  false;
+    }
+  } catch (error) {
+    let errorObj ={
+      loading:loader,
+      Error: new Error (error.message).toString()
+    }
+    return errorObj
+  }
+}
+
+
+
 export async function Read(path,requestConfig,loader=true) {
   const {dataMethod,paginationMethods} = requestConfig
   try {
@@ -134,7 +196,6 @@ export async function Read(path,requestConfig,loader=true) {
     return errorObj
   }
 }
-
 export async function SelectByID(path,id,loader=true){
   try {
     loader && store.dispatch(setLoading(true));
@@ -154,40 +215,7 @@ export async function SelectByID(path,id,loader=true){
   }
 }
 
-export async function Delete(path,id,loader=true){// id={id:2}
-  try {
-    loader && store.dispatch(setLoading(true));
-    let res = await ApiService.get(path, {params: id});
-    if(res.status===200){
-      return res;
-    }
-    else{
-      return false;
-    }
-  } catch (error) {
-    let errorObj ={
-      loader,
-      Error: new Error (error.message)
-    }
-    return errorObj
-  }
-}
 
-export async function Update(path,id,updateValue, params,loader=true) {
-  try {
-    loader && store.dispatch(setLoading(true));
-    let res = await ApiService.post(path, updateValue, {params});
-    if(res.status===200){
-      return true;
-    }else{
-      return  false;
-    }
-  } catch (error) {
-    let errorObj ={
-      loading:loader,
-      Error: new Error (error.message).toString()
-    }
-    return errorObj
-  }
-}
+
+
 

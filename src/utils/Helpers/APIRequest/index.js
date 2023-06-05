@@ -13,10 +13,7 @@ ApiService.interceptors.request.use(
     const token = JSON.parse(
       JSON.parse(localStorage.getItem("persist:root")).auth
     ).token;
-
     const xToken = routeValidation(process.env.REACT_APP_API_URL + config.url);
-    // let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL3YxL2xvZ2luIn0.owV3S63JjpHbBfxcisi7AIuwnf8VEjrJmj1ctIGV0-c'
-
     config.headers.Accept = "application/json";
     config.headers["Content-Type"] = "application/json";
     config.headers[process.env.REACT_APP_X_AUTH_KEY] = xToken

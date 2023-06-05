@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
+import { FaBeer ,FaAdn } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading, updateGlobalAlert } from "../../../store/slices/appSlice";
 import { Container, Row, Col } from "react-bootstrap";
@@ -35,7 +36,22 @@ const onSubmit = async (values,formikProps) => {
 const getDentisDetailsList = async (params)=>{
   let result = await SelectByPageing(apiLink.hitDentistList,params);
   return result && result;
- }
+}
+
+const deleteAction = async(item)=>{
+  let result = await Delete(apiLink.hitDentistList,item);
+}
+
+const updateAction = async(item)=>{
+  
+}
+
+
+
+
+
+
+
 
 const SelectAll = async ()=>{
   let result = await Read(apiLink.hitPostList,defaultMethod);
@@ -91,16 +107,34 @@ function HomePage() {
 
   const dispatch = useDispatch();
   const { globalAlert,isLoad } = useSelector((state) => state.app);
+  const list = {
+    "background": "#28cf972e",
+    "padding": "5px 10px",
+    "borderRadius": "5px",
+    "display": "flex"
+  }
   return (
     <Container>
       <Row>
         <Col md={6} className="mx-auto">
-          <h1>LIST</h1>
+          <h1> <FaBeer/> LIST </h1>
           <ul>
               {data.slice(0,5).map((item,id)=>{
                 return (
-                  <li key={item.id}>
+                  <li key={item.id}  
+                  style={{
+                    fontSize: "1rem",
+                    fontWeight: 1.5,
+                    lineHeight: 1.5,
+                    color: "#292b2c",
+                    backgroundColor: "#fff",
+                    padding: "0 2em"
+                  }}>
                     <Link to={`/${item.id}`}>{`ID:${item.id} Name: ${item.first_name} Email: ${item.email}`}</Link>
+                    <div className="btn-group animated fadeInUp mx-2" role="group" aria-label="Basic example">
+                      <button onClick={()=>{deleteAction(item)}} className="btn btn-danger"><FaAdn/></button>
+                      <button onClick={()=>{updateAction(item)}} className="btn  btn-success "><i className="fa fa-edit"/>Edit</button>
+                    </div>
                   </li>
                 )
               })}
