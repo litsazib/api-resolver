@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading, updateGlobalAlert } from "../../../store/slices/appSlice";
 import { Container, Row, Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { apiLink, site_title } from "../../../utils/env.constant";
+import { initialPaginate } from "../../../utils/env.constant";
 import { defaultMethod, Create, Read, SelectByPageing, SelectByID, Delete, Update } from "../../../utils/Helpers/APIRequest/Crud";
 import {
   Formik,
@@ -17,46 +19,29 @@ import * as Yup from "yup";
 import TextError from "./TextError";
 
 const initialValues = {
-  name: "",
-  email: "",
-  channel: "",
-  comments: "",
-  address: "",
-  social: {
-    facebook: "",
-    twitter: "",
-  },
-  phoneNumbers: ["", ""],
-  phNumbers: [""],
+  first_name: "",
+  last_name: "",
+  email: ""
 };
 
-let loader = true;
+// const [loader, setLoader] = useState(true)
 
-const onSubmit = async (values) => {
-  let postBody = {
-    "email":"office.admin@example.com",
-    "password":"123456"
-  }
-  let result = await Create(apiLink.hitLoginLink, postBody ,defaultMethod,loader);
-  console.log('submit',result)
+const onSubmit = async (values,formikProps) => {
+  let result = await Create(apiLink.hitCreateDentist, values );
+  // console.log(result)
+  return result && result.resetForm();
 };
+
+const getDentisDetailsList = async (params)=>{
+  let result = await SelectByPageing(apiLink.hitDentistList,params);
+  return result && result;
+ }
 
 const SelectAll = async ()=>{
-  let result = await Read(apiLink.hitPostList,defaultMethod,loader);
+  let result = await Read(apiLink.hitPostList,defaultMethod);
   return result
 }
 
-
-let initialParam = {
-  // ...params,
-  // page: pagination.current,
-  // per_page: pagination.pageSize,
-};
-
-const List = async (initialParam)=>{
-  let result = await SelectByPageing(apiLink.hitPostList,initialParam,defaultMethod,loader);
-  return result
-}
 
 const SelectOne = async (id)=>{
   let result = await SelectByID(apiLink.hitPostList,id,loader);
@@ -71,10 +56,9 @@ const DeleteOne = async (id)=>{
 }
 
 const validationSchema = Yup.object({
-  name: Yup.string().required("Required"),
-  email: Yup.string().email("Invalid email format").required("Required"),
-  channel: Yup.string().required("Required"),
-  comments: Yup.string().required("Required"),
+  first_name: Yup.string().required("Required"),
+  last_name: Yup.string().required("Required"),
+  email: Yup.string().email("Invalid email format").required("Required")
 });
 
 const validateComments = (value) => {
@@ -87,17 +71,22 @@ const validateComments = (value) => {
 
 
 function HomePage() {
+  const [params, setParams] = useState(initialPaginate);
   const [data, setData] = useState([]);
+  const [pagination,setPagination] = useState({})
   const [error, setError] = useState({});
+  // console.log(data)
+  // console.log(pagination)
   useEffect(() => {
-    // SelectAll()
-    //   .then((res)=>{
-    //     setData(res)
-    //   })
-    //   .catch((err)=>{
-    //     setError(err)
-    //   })
-  },[]);
+    getDentisDetailsList(params)
+        .then((result)=>{
+          setData(result.data)
+          setPagination(result.pagination)
+        })
+        .catch((err)=>{
+          setError(err.message)
+        })
+  }, []);
 
 
   const dispatch = useDispatch();
@@ -108,11 +97,13 @@ function HomePage() {
         <Col md={6} className="mx-auto">
           <h1>LIST</h1>
           <ul>
-              {/* {data.slice(0,5).map((item,id)=>{
+              {data.slice(0,5).map((item,id)=>{
                 return (
-                  <li key={id}>{item.title}</li>
+                  <li key={item.id}>
+                    <Link to={`/${item.id}`}>{`ID:${item.id} Name: ${item.first_name} Email: ${item.email}`}</Link>
+                  </li>
                 )
-              })} */}
+              })}
           </ul>
         </Col>
       </Row>
@@ -126,7 +117,7 @@ function HomePage() {
         <Col md={6} className="mx-auto">
           <Formik
             initialValues={initialValues}
-            // validationSchema={validationSchema}
+            validationSchema={validationSchema}
             onSubmit={onSubmit}
             enableReinitialize
             // validateOnChange={false}
@@ -138,9 +129,14 @@ function HomePage() {
               return (
                 <Form>
                   <div className="form-control">
-                    <label htmlFor="name">Name</label>
-                    <Field type="text" id="name" name="name" />
-                    <ErrorMessage name="name" component={TextError} />
+                    <label htmlFor="first_name">First Name</label>
+                    <Field type="text" id="first_name" name="first_name" />
+                    <ErrorMessage name="first_name" component={TextError} />
+                  </div>
+                  <div className="form-control">
+                    <label htmlFor="last_name">Last Name</label>
+                    <Field type="text" id="last_name" name="last_name" />
+                    <ErrorMessage name="last_name" component={TextError} />
                   </div>
 
                   <div className="form-control">
@@ -151,100 +147,6 @@ function HomePage() {
                         <div className="error text-danger">{error}</div>
                       )}
                     </ErrorMessage>
-                  </div>
-
-                  {/* <div className="form-control">
-                    <label htmlFor="channel">Channel</label>
-                    <Field
-                      type="text"
-                      id="channel"
-                      name="channel"
-                      placeholder="YouTube channel name"
-                    />
-                    <ErrorMessage name="channel" />
-                  </div>
-
-                  <div className="form-control">
-                    <label htmlFor="comments">Comments</label>
-                    <Field
-                      as="textarea"
-                      id="comments"
-                      name="comments"
-                      validate={validateComments}
-                    />
-                    <ErrorMessage name="comments" component={TextError} />
-                  </div> */}
-
-                  <div className="form-control">
-                    <label htmlFor="address">Address</label>
-                    <FastField name="address">
-                      {({ field, form, meta }) => {
-                        // console.log('Field render')
-                        return (
-                          <div>
-                            <input type="text" {...field} />
-                            {meta.touched && meta.error ? (
-                              <div>{meta.error}</div>
-                            ) : null}
-                          </div>
-                        );
-                      }}
-                    </FastField>
-                  </div>
-
-                  <div className="form-control">
-                    <label htmlFor="facebook">Facebook profile</label>
-                    <Field type="text" id="facebook" name="social.facebook" />
-                  </div>
-
-                  <div className="form-control">
-                    <label htmlFor="twitter">Twitter profile</label>
-                    <Field type="text" id="twitter" name="social.twitter" />
-                  </div>
-
-                  <div className="form-control">
-                    <label htmlFor="primaryPh">Primary phone number</label>
-                    <Field type="text" id="primaryPh" name="phoneNumbers[0]" />
-                  </div>
-
-                  <div className="form-control">
-                    <label htmlFor="secondaryPh">Secondary phone number</label>
-                    <Field
-                      type="text"
-                      id="secondaryPh"
-                      name="phoneNumbers[1]"
-                    />
-                  </div>
-
-                  <div className="form-control">
-                    <label>List of phone numbers</label>
-                    <FieldArray name="phNumbers">
-                      {(fieldArrayProps) => {
-                        const { push, remove, form } = fieldArrayProps;
-                        const { values } = form;
-                        const { phNumbers } = values;
-                        return (
-                          <div>
-                            {phNumbers.map((phNumber, index) => (
-                              <div key={index}>
-                                <Field name={`phNumbers[${index}]`} />
-                                {index > 0 && (
-                                  <button
-                                    type="button"
-                                    onClick={() => remove(index)}
-                                  >
-                                    -
-                                  </button>
-                                )}
-                              </div>
-                            ))}
-                            <button type="button" onClick={() => push("")}>
-                              +
-                            </button>
-                          </div>
-                        );
-                      }}
-                    </FieldArray>
                   </div>
                   <button
                     type="submit"

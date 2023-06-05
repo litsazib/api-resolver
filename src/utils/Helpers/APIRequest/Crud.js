@@ -1,39 +1,119 @@
 import ApiService from "./index";
 import { store } from "../../../store";
 import { setLoading, updateGlobalAlert } from "../../../store/slices/appSlice";
+import { logoutAction, updateAlert } from "../../../store/slices/authSlice";
 
 
 export const defaultMethod  = {
-  dataMethod:(array) =>{
-    return array
+  dataMethod:(data) =>{
+    return data
   },
   paginationMethods:(Obj) =>{
     return Obj
   }
 } 
 
-export async function Create(path, data,requestConfig,loader) {
-  const {dataMethod,paginationMethods} = requestConfig
+export async function Create(path, data ,loader=true) {
   try {
     loader && store.dispatch(setLoading(true));
     let res = await ApiService.post(path, data);
-    if(res.resultCode===200){
-      return res.data;
-    }else {
+    if(res.resultCode === 200){
+      store.dispatch(updateGlobalAlert({
+        type: 'Success',
+        title: res.success.title,
+        message: res.data.message
+      }))
+      return true;
+    }else{
+      if(res.response.data.resultCode === 401){
+        store.dispatch(updateGlobalAlert({
+          type: 'Error',
+          title: res.response.data.error.title,
+          message: res.response.data.error.message
+        }))
+        store.dispatch(logoutAction())
+      }else if(res.response.data.resultCode === 500){
+        store.dispatch(updateGlobalAlert({
+          type: 'Error',
+          title: res.response.data.error.title,
+          message: res.response.data.error.message
+        }))
+      }
       return false
     }
   } catch (error) {
-    let errorObj ={
-      loading:loader,
-      Error: new Error (error.message).toString(),
-      paginationMethods:paginationMethods({}),
-      dataMethod:dataMethod([]),
-    }
-    return errorObj
+    store.dispatch(updateGlobalAlert({
+      type: 'Error',
+      title: 'System Error',
+      message: new Error(error).message
+    }))
+    return false;
   }
 }
 
-export async function Read(path,requestConfig,loader) {
+export async function SelectByPageing (path,params ,loader=true) {
+  try {
+    loader && store.dispatch(setLoading(true));
+    let res = await ApiService.get(path, {params});
+    if (res.resultCode === 200) {
+      return {
+        data:res.data.data,
+        pagination:{
+            currentPage:res.data.currentPage,
+            totalItem:res.data.totalItem,
+            totalpage:res.data.totalpage
+        }
+      }
+    }
+    else{
+      if(res.response.data.resultCode === 401){
+        store.dispatch(updateGlobalAlert({
+          type: 'Error',
+          title: res.response.data.error.title,
+          message: res.response.data.error.message
+        }))
+        store.dispatch(logoutAction())
+      }else if(res.response.data.resultCode === 500){
+        store.dispatch(updateGlobalAlert({
+          type: 'Error',
+          title: res.response.data.error.title,
+          message: res.response.data.error.message
+        }))
+      }else if(res.response.data.resultCode === 404){
+        store.dispatch(updateGlobalAlert({
+          type: 'Error',
+          title: res.response.data.error.title,
+          message: res.response.data.error.message
+        }))
+      }
+      return false
+    }
+  } catch (error) {
+    if (error.response) {
+      store.dispatch(
+        updateGlobalAlert({
+          type: "Error",
+          title: error.response.data.error.title,
+          message: error.response.data.error.message,
+        })
+      );
+      if (error.response.data.resultCode === 401) {
+        store.dispatch(logoutAction());
+      }
+    } else {
+      store.dispatch(
+        updateGlobalAlert({
+          type: "Error",
+          title: "System Failure!",
+          message: new Error(error).message,
+        })
+      );
+    }
+    store.dispatch(setLoading(false));
+  }
+}
+
+export async function Read(path,requestConfig,loader=true) {
   const {dataMethod,paginationMethods} = requestConfig
   try {
     loader && store.dispatch(setLoading(true));
@@ -55,29 +135,7 @@ export async function Read(path,requestConfig,loader) {
   }
 }
 
-export async function SelectByPageing (path,params,requestConfig,loader) {
-  const {dataMethod,paginationMethods} = requestConfig
-  try {
-    loader && store.dispatch(setLoading(true));
-    let res = await ApiService.get(path, {params});
-    if(res.status===200){
-      return res;
-    }
-    else{
-      return false;
-    }
-  } catch (error) {
-    let errorObj ={
-      loader,
-      Error: new Error (error.message),
-      paginationMethods:paginationMethods({}),
-      dataMethod:dataMethod([]),
-    }
-    return errorObj
-  }
-}
-
-export async function SelectByID(path,id,loader){
+export async function SelectByID(path,id,loader=true){
   try {
     loader && store.dispatch(setLoading(true));
     let res = await ApiService.get(path+"/"+id);
@@ -96,10 +154,10 @@ export async function SelectByID(path,id,loader){
   }
 }
 
-export async function Delete(path,id,loader){
+export async function Delete(path,id,loader=true){// id={id:2}
   try {
     loader && store.dispatch(setLoading(true));
-    let res = await ApiService.get(path+"/"+id);
+    let res = await ApiService.get(path, {params: id});
     if(res.status===200){
       return res;
     }
@@ -115,10 +173,10 @@ export async function Delete(path,id,loader){
   }
 }
 
-export async function Update(path,id,updateValue,loader) {
+export async function Update(path,id,updateValue, params,loader=true) {
   try {
     loader && store.dispatch(setLoading(true));
-    let res = await ApiService.post(path+"/"+id, updateValue);
+    let res = await ApiService.post(path, updateValue, {params});
     if(res.status===200){
       return true;
     }else{

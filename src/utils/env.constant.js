@@ -1,4 +1,8 @@
 const apiLink = {
+  hitCreateDentist: "create-dentist",
+  hitDentistList: "dentist-list",
+
+
   hitRegistration: "posts",
   hitPostList: "posts",
   hitPostDelete: "posts",
