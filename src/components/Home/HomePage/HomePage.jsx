@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
-import { FaBeer ,FaAdn } from "react-icons/fa";
+import { FaBeer , FaTrash , FaEdit} from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading, updateGlobalAlert } from "../../../store/slices/appSlice";
 import { Container, Row, Col } from "react-bootstrap";
@@ -35,11 +35,13 @@ const onSubmit = async (values,formikProps) => {
 
 const getDentisDetailsList = async (params)=>{
   let result = await SelectByPageing(apiLink.hitDentistList,params);
-  return result && result;
+  return result && result
 }
 
 const deleteAction = async(item)=>{
   let result = await Delete(apiLink.hitDentistList,item);
+  // console.log(result)
+  return result && result
 }
 
 const updateAction = async(item)=>{
@@ -132,8 +134,8 @@ function HomePage() {
                   }}>
                     <Link to={`/${item.id}`}>{`ID:${item.id} Name: ${item.first_name} Email: ${item.email}`}</Link>
                     <div className="btn-group animated fadeInUp mx-2" role="group" aria-label="Basic example">
-                      <button onClick={()=>{deleteAction(item)}} className="btn btn-danger"><FaAdn/></button>
-                      <button onClick={()=>{updateAction(item)}} className="btn  btn-success "><i className="fa fa-edit"/>Edit</button>
+                      <button style={{"border":"none"}} onClick={()=>{deleteAction(item)}}><FaTrash/></button>
+                      <button style={{"border":"none"}}  onClick={()=>{updateAction(item)}}> <FaEdit/> </button>
                     </div>
                   </li>
                 )
