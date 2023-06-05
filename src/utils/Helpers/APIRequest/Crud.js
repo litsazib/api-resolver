@@ -38,6 +38,12 @@ export async function Create(path, data ,loader=true) {
           title: res.response.data.error.title,
           message: res.response.data.error.message
         }))
+      }else if(res.response.data.resultCode === 404){
+        store.dispatch(updateGlobalAlert({
+          type: 'Error',
+          title: res.response.data.error.title,
+          message: res.response.data.error.message
+        }))
       }
       return false
     }
@@ -141,6 +147,12 @@ export async function Delete(path,params,loader=true){
           title: res.response.data.error.title,
           message: res.response.data.error.message
         }))
+      }else if(res.response.data.resultCode === 404){
+        store.dispatch(updateGlobalAlert({
+          type: 'Error',
+          title: res.response.data.error.title,
+          message: res.response.data.error.message
+        }))
       }
       return false
     }
@@ -158,7 +170,7 @@ export async function Update(path,updateValue,params,loader=true) {
   const {id} = params
   try {
     loader && store.dispatch(setLoading(true));
-    let res = await ApiService.post(path, updateValue, {params:{id}});
+    let res = await ApiService.put(path, updateValue, {params:{id}});
     if(res.status===200){
       return true;
     }else{

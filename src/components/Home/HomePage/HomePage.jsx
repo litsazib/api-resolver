@@ -27,9 +27,8 @@ const initialValues = {
 
 // const [loader, setLoader] = useState(true)
 
-const onSubmit = async (values,formikProps) => {
+const onSubmit = async (type="create",values,formikProps) => {
   let result = await Create(apiLink.hitCreateDentist, values );
-  // console.log(result)
   return result && result.resetForm();
 };
 
@@ -39,19 +38,13 @@ const getDentisDetailsList = async (params)=>{
 }
 
 const deleteAction = async(item)=>{
-  let result = await Delete(apiLink.hitDentistList,item);
-  // console.log(result)
+  let result = await Delete(apiLink.hitDeleteDentist,item);
   return result && result
 }
 
-const updateAction = async(item)=>{
-  
-}
-
-
-
-
-
+// const updateAction = async(type = "update",values,item)=>{
+//   let result = await Update(apiLink.hitUpdateDentist,values,item)
+// }
 
 
 
@@ -91,10 +84,16 @@ const validateComments = (value) => {
 function HomePage() {
   const [params, setParams] = useState(initialPaginate);
   const [data, setData] = useState([]);
+  const [updateData, setUpdateData] = useState([]);
+  const [update,setUpdate] = useState(false)
   const [pagination,setPagination] = useState({})
   const [error, setError] = useState({});
-  // console.log(data)
-  // console.log(pagination)
+
+  const updateAction = (item)=>{
+    setUpdateData(item)
+    setUpdate(true)
+  }
+
   useEffect(() => {
     getDentisDetailsList(params)
         .then((result)=>{
@@ -109,12 +108,6 @@ function HomePage() {
 
   const dispatch = useDispatch();
   const { globalAlert,isLoad } = useSelector((state) => state.app);
-  const list = {
-    "background": "#28cf972e",
-    "padding": "5px 10px",
-    "borderRadius": "5px",
-    "display": "flex"
-  }
   return (
     <Container>
       <Row>
@@ -144,7 +137,7 @@ function HomePage() {
         </Col>
       </Row>
       <Row>
-        <h1 className="mt-4 mb-5 text-center">Formik Form</h1>
+        <h1 className="mt-4 mb-5 text-center">{!update === true ? "Create Form":"Update Form "} </h1>
         <small>
           <span className="text-danger">{globalAlert.type}</span> <br/>
           <span>{globalAlert.title}</span><br/>
