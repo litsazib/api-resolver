@@ -26,52 +26,33 @@ const initialValues = {
 };
 
 // const [loader, setLoader] = useState(true)
-
-const onSubmit = async (type="create",values,formikProps) => {
-  let result = await Create(apiLink.hitCreateDentist, values );
-  return result && result.resetForm();
-};
-
 const getDentisDetailsList = async (params)=>{
   let result = await SelectByPageing(apiLink.hitDentistList,params);
   return result && result
 }
-
 const deleteAction = async(item)=>{
   let result = await Delete(apiLink.hitDeleteDentist,item);
   return result && result
 }
-
-// const updateAction = async(type = "update",values,item)=>{
-//   let result = await Update(apiLink.hitUpdateDentist,values,item)
-// }
-
-
-
 const SelectAll = async ()=>{
   let result = await Read(apiLink.hitPostList,defaultMethod);
   return result
 }
-
-
 const SelectOne = async (id)=>{
   let result = await SelectByID(apiLink.hitPostList,id,loader);
   console.log('SelectByID',result)
   return result
 }
-
 const DeleteOne = async (id)=>{
   let result = await Delete(apiLink.hitPostDelete,id,loader);
   console.log('DeleteData',result)
   return result
 }
-
 const validationSchema = Yup.object({
   first_name: Yup.string().required("Required"),
   last_name: Yup.string().required("Required"),
   email: Yup.string().email("Invalid email format").required("Required")
 });
-
 const validateComments = (value) => {
   let error;
   if (!value) {
@@ -89,9 +70,26 @@ function HomePage() {
   const [pagination,setPagination] = useState({})
   const [error, setError] = useState({});
 
+  const onSubmit = async (type="create",values,formikProps) => {
+    if(type === "create") {
+      let result = await Create(apiLink.hitCreateDentist, values );
+      if (result) {
+        formikProps.resetForm();
+      }
+    }else if(type === "update") {
+      let result = await Update(apiLink.hitUpdateDentist, values, updateData);
+      if (result) {
+        formikProps.resetForm();
+        setUpdateData(null);
+        setUpdate(false);
+      }
+    }
+  };
+
+
   const updateAction = (item)=>{
-    setUpdateData(item)
-    setUpdate(true)
+    setUpdateData(item);
+    setUpdate(true);
   }
 
   useEffect(() => {
@@ -145,9 +143,11 @@ function HomePage() {
         </small>
         <Col md={6} className="mx-auto">
           <Formik
-            initialValues={initialValues}
+            initialValues={updateData || initialValues}
             validationSchema={validationSchema}
-            onSubmit={onSubmit}
+            onSubmit={(values, formikProps) =>
+              onSubmit(update ? "update" : "create", values, formikProps)
+            }
             enableReinitialize
             // validateOnChange={false}
             // validateOnBlur={false}
