@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from "react-router-dom";
+import { Link, matchPath } from "react-router-dom";
 import { FaBeer , FaTrash , FaEdit} from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading, updateGlobalAlert } from "../../../store/slices/appSlice";
@@ -24,29 +24,18 @@ const initialValues = {
   last_name: "",
   email: ""
 };
-
 // const [loader, setLoader] = useState(true)
-
-const onSubmit = async (values,formikProps) => {
-  let result = await Create(apiLink.hitCreateDentist, values );
-  return result && result.resetForm();
-};
-
 const getDentisDetailsList = async (params)=>{
   let result = await SelectByPageing(apiLink.hitDentistList,params);
   return result && result
 }
-
 const deleteAction = async(item)=>{
   let result = await Delete(apiLink.hitDeleteDentist,item);
   return result && result
 }
-
 // const updateAction = async(type = "update",values,item)=>{
 //   let result = await Update(apiLink.hitUpdateDentist,values,item)
 // }
-
-
 
 const SelectAll = async ()=>{
   let result = await Read(apiLink.hitPostList,defaultMethod);
@@ -82,17 +71,42 @@ const validateComments = (value) => {
 
 
 function HomePage() {
+
   const [params, setParams] = useState(initialPaginate);
   const [data, setData] = useState([]);
+  const [editMode,setEditMode] = useState(false)
   const [updateData, setUpdateData] = useState([]);
-  const [update,setUpdate] = useState(false)
   const [pagination,setPagination] = useState({})
   const [error, setError] = useState({});
 
   const updateAction = (item)=>{
+    initialValues.first_name = item.first_name;
+    initialValues.last_name = item.last_name;
+    initialValues.email = item.email
+    setEditMode(true)
     setUpdateData(item)
-    setUpdate(true)
+    onSubmit();
   }
+
+  const onSubmit = async (values,formikProps,mode=editMode) => {
+    console.log(mode)
+    if(!editMode) {
+      let result = await Create(apiLink.hitCreateDentist, values );
+      return result && formikProps.resetForm();
+    }else {
+      const updateValue = {
+        ...updateData,
+        UpdateField:{
+          first_name:values.first_name,
+          last_name:values.last_name,
+          status:updateData.status
+        }
+      }
+      let result = await Update(apiLink.hitUpdateDentist,updateValue)
+    }
+  };
+
+
 
   useEffect(() => {
     getDentisDetailsList(params)
@@ -137,7 +151,7 @@ function HomePage() {
         </Col>
       </Row>
       <Row>
-        <h1 className="mt-4 mb-5 text-center">{!update === true ? "Create Form":"Update Form "} </h1>
+        <h1 className="mt-4 mb-5 text-center">{!editMode === true ? "Create Form":"Update Form "} </h1>
         <small>
           <span className="text-danger">{globalAlert.type}</span> <br/>
           <span>{globalAlert.title}</span><br/>
@@ -149,9 +163,6 @@ function HomePage() {
             validationSchema={validationSchema}
             onSubmit={onSubmit}
             enableReinitialize
-            // validateOnChange={false}
-            // validateOnBlur={false}
-            // validateOnMount
           >
             {(formik) => {
               // console.log("Formik props", formik);

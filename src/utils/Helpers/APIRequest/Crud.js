@@ -166,16 +166,18 @@ export async function Delete(path,params,loader=true){
   }
 }
 
-export async function Update(path,values,updateData,loader=true) {
+export async function Update(path,updateData,loader=true) {
   const {id} = updateData
+  console.log(updateData.UpdateField)
   try {
     loader && store.dispatch(setLoading(true));
-    let res = await ApiService.put(path, values, {params:{id}});
-    if(res.status===200){
-      return true;
-    }else{
-      return  false;
-    }
+    let res = await ApiService.put(path+id, updateData.UpdateField);
+    console.log(res)
+    // if(res.status===200){
+    //   return true;
+    // }else{
+    //   return  false;
+    // }
   } catch (error) {
     let errorObj ={
       loading:loader,

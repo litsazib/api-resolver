@@ -2,7 +2,7 @@ const apiLink = {
   hitCreateDentist: "create-dentist",
   hitDentistList: "dentist-list",
   hitDeleteDentist: "delete-dentist",
-  hitUpdateDentist: "update-dentist",
+  hitUpdateDentist: "update-dentist?dentist_serving_office_id=",
 
 
   hitRegistration: "posts",
